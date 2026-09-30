@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="CreditWorksVehicleWeight/CreditWorksVehicleWeight.csproj" />
   <Project Path="DataAccess/DataAccess.csproj" />
+  <Project Path="VehicleWeightTest/VehicleWeightTest.csproj" Id="5c8f06ae-e06c-4496-b161-fe3cd5a499f2" />
 </Solution>
