@@ -269,7 +269,7 @@ This project is proprietary software for CreditWorks.
 
 ## Support
 
-For issues or questions, please contact: it-team@creditworks.co.nz
+For issues or questions, please contact: yadavrahul1530@gmail.com
 
 ---
 
