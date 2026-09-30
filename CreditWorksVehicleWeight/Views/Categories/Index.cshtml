@@ -1,0 +1,56 @@
+﻿@using CreditWorksVehicleWeight.ViewModels
+@model CategoryConfigurationViewModel
+@{
+    ViewData["Title"] = "Categories";
+}
+<section class="page-heading"><div><p class="eyebrow">CONFIGURATION</p><h1>Weight categories</h1><p class="muted">Define a complete set of ranges. Existing vehicle categories update automatically when you save.</p></div></section>
+<div class="callout"><span>ⓘ</span><div><strong>Ranges use inclusive minimums and exclusive maximums.</strong><br />For example, 500.00 kg belongs to the category starting at 500 kg. The final range has no upper limit.</div></div>
+<form asp-action="Save" method="post" id="category-form">
+    <div asp-validation-summary="ModelOnly" class="validation-summary category-errors"></div>
+    <section class="panel table-panel">
+        <div class="panel-heading"><div><h2>Category ranges</h2><p>Ranges must start at zero, be contiguous, and end with an open range.</p></div><button type="button" class="button secondary" id="add-category">＋ Add category</button></div>
+        <div class="table-scroll">
+            <table class="category-table">
+                <thead><tr><th>Icon</th><th>Category name</th><th>Minimum (kg)</th><th>Maximum (kg)</th><th></th></tr></thead>
+                <tbody id="category-rows">
+                    @for (var i = 0; i < Model.Categories.Count; i++)
+                    {
+                        <tr class="category-row">
+                            <td><select name="Categories[@i].Icon" aria-label="Category icon" class="icon-select">@foreach(var icon in Model.IconChoices){
+                                <option value="@icon.Value" selected="@(icon.Value == Model.Categories[i].Icon)">@icon.Text</option>
+                            }
+                        </select></td>
+                        <td><input name="Categories[@i].Name" value="@Model.Categories[i].Name" required maxlength="80" aria-label="Category name" /></td>
+                        <td><input name="Categories[@i].MinimumWeightKg" value="@Model.Categories[i].MinimumWeightKg.ToString(System.Globalization.CultureInfo.InvariantCulture)" type="number" min="0" step="0.01" required aria-label="Minimum weight" /></td>
+                        <td><input name="Categories[@i].MaximumWeightKg" value="@(Model.Categories[i].MaximumWeightKg?.ToString(System.Globalization.CultureInfo.InvariantCulture))" type="number" min="0.01" step="0.01" placeholder="No limit" aria-label="Maximum weight" /></td>
+                        <td><button class="icon-button remove-row" type="button" aria-label="Remove category">×</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="form-actions"><button class="button primary" type="submit">Save categories</button></div>
+</section>
+</form>
+<template id="category-template">
+    <tr class="category-row">
+        <td><select data-name="Icon" aria-label="Category icon" class="icon-select"><option>🛵</option><option>🚙</option><option>🚚</option><option>🚗</option><option>🏎️</option><option>🚐</option><option>🚜</option><option>🚛</option></select></td>
+        <td><input data-name="Name" required maxlength="80" placeholder="e.g. Light" aria-label="Category name" /></td>
+        <td><input data-name="MinimumWeightKg" type="number" min="0" step="0.01" required aria-label="Minimum weight" /></td>
+        <td><input data-name="MaximumWeightKg" type="number" min="0.01" step="0.01" placeholder="No limit" aria-label="Maximum weight" /></td>
+        <td><button class="icon-button remove-row" type="button" aria-label="Remove category">×</button></td>
+    </tr>
+</template>
+@section Scripts {
+    <script>
+        (() => {
+          const body = document.getElementById('category-rows');
+          const template = document.getElementById('category-template');
+          function renumber() {
+            [...body.querySelectorAll('.category-row')].forEach((row, i) => row.querySelectorAll('[name], [data-name]').forEach(input => input.name = `Categories[${i}].${input.dataset.name || input.name.split('.').pop()}`));
+          }
+          body.addEventListener('click', event => { if (event.target.closest('.remove-row')) { event.target.closest('tr').remove(); renumber(); } });
+          document.getElementById('add-category').addEventListener('click', () => { body.append(template.content.cloneNode(true)); renumber(); });
+        })();
+    </script>
+}

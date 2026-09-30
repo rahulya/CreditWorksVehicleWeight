@@ -1,5 +1,6 @@
 ﻿using DataAccess.Models;
 using DataAccess.Repository.Interface;
+using DataAccess.Repository.Implementation;
 
 namespace CreditWorksVehicleWeight.Services
 {

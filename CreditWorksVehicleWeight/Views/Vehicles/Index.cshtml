@@ -1,0 +1,45 @@
+﻿@model VehicleListViewModel
+@{
+    ViewData["Title"] = "Vehicles";
+    string SortLabel(string title, string key) => title + (Model.SortBy == key ? (Model.Direction == "asc" ? " ↑" : " ↓") : "");
+    string SortUrl(string key) => Url.Action("Index", new { sortBy = key, direction = Model.NextDirection(key) }) ?? "#";
+}
+<section class="page-heading">
+    <div><p class="eyebrow">FLEET OVERVIEW</p><h1>Vehicles</h1><p class="muted">Review and manage the vehicles in your fleet.</p></div>
+    <a class="button primary" asp-action="Create">＋ Add vehicle</a>
+</section>
+<section class="stat-row">
+    <div class="stat-card"><span class="stat-icon">🚘</span><div><strong>@Model.Vehicles.Count</strong><span>vehicles</span></div></div>
+    <div class="stat-card"><span class="stat-icon">⚖️</span><div><strong>@Model.Vehicles.Select(x => x.CategoryName).Distinct().Count()</strong><span>categories in use</span></div></div>
+    <div class="stat-card"><span class="stat-icon">↕</span><div><strong>@SortLabel(Model.SortBy switch { "manufacturer" => "Manufacturer", "year" => "Year", "weight" => "Weight", _ => "Owner" }, Model.SortBy)</strong><span>current sorting</span></div></div>
+</section>
+<section class="panel table-panel">
+    <div class="panel-heading"><div><h2>Vehicle register</h2><p>Choose a column heading to sort the list.</p></div><span class="count-pill">@Model.Vehicles.Count RECORDS</span></div>
+    @if (Model.Vehicles.Count == 0)
+    {
+        <div class="empty-state"><div class="empty-icon">🚗</div><h3>No vehicles yet</h3><p>Add the first vehicle to populate the register.</p><a class="button primary" asp-action="Create">Add vehicle</a></div>
+    }
+    else
+    {
+        <div class="table-scroll"><table>
+            <thead><tr>
+                <th><a class="sort-link @(Model.SortBy == "owner" ? "active" : "")" href="@SortUrl("owner")">Owner @if(Model.SortBy == "owner"){<span>@(Model.Direction == "asc" ? "↑" : "↓")</span>}</a></th>
+                <th><a class="sort-link @(Model.SortBy == "manufacturer" ? "active" : "")" href="@SortUrl("manufacturer")">Manufacturer @if(Model.SortBy == "manufacturer"){<span>@(Model.Direction == "asc" ? "↑" : "↓")</span>}</a></th>
+                <th><a class="sort-link @(Model.SortBy == "year" ? "active" : "")" href="@SortUrl("year")">Year @if(Model.SortBy == "year"){<span>@(Model.Direction == "asc" ? "↑" : "↓")</span>}</a></th>
+                <th><a class="sort-link @(Model.SortBy == "weight" ? "active" : "")" href="@SortUrl("weight")">Weight @if(Model.SortBy == "weight"){<span>@(Model.Direction == "asc" ? "↑" : "↓")</span>}</a></th>
+                <th>Category</th><th class="actions-heading">Actions</th>
+            </tr></thead>
+            <tbody>
+            @foreach (var vehicle in Model.Vehicles)
+            {
+                <tr>
+                    <td><strong>@vehicle.OwnerName</strong></td><td>@vehicle.Manufacturer</td><td>@vehicle.YearOfManufacture</td><td>@vehicle.WeightKg.ToString("N2") kg</td>
+                    <td><span class="category-badge"><span class="category-icon">@vehicle.CategoryIcon</span>@vehicle.CategoryName</span></td>
+                    <td class="actions"><a class="text-link" asp-action="Edit" asp-route-id="@vehicle.Id">Edit</a>
+                        <form asp-action="Delete" asp-route-id="@vehicle.Id" method="post" onsubmit="return confirm('Delete this vehicle?')"><button type="submit" class="text-link danger-link">Delete</button></form></td>
+                </tr>
+            }
+            </tbody>
+        </table></div>
+    }
+</section>
